@@ -1,0 +1,21 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{title}} - microblog</title>
+    {% else %}
+    <title>microblog</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>
+    Microblog: {% for m in menu %}
+    {{m}}   
+    
+    {% endfor %}
+</div>
+    <hr>
+       
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
