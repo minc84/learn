@@ -14,8 +14,9 @@ menu = ["Главная", "Регистрация", "Контакты"]
 def index():
 	return render_template("index.html", menu=menu)
 
+@app.route('/login')
 def login():
-	return render_template("login.html")
+	return render_template("login.html", menu=menu)
 
 
 if __name__ == '__main__':
