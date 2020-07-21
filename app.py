@@ -8,7 +8,9 @@ app.config.from_object(Configuration)
 
 
 
-menu = ["Главная", "Регистрация", "Контакты"]
+menu = [{"name": "Главная", "url": "index"},
+		{"name": "Логин", "url": "login"}]
+
 @app.route('/')
 def index():
 	print(url_for('index'))
