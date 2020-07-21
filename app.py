@@ -1,15 +1,16 @@
 from flask import Flask
 from config import Configuration
 import os
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, request
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
 
 
 
-menu = [{"name": "Главная", "url": "index"},
-		{"name": "Логин", "url": "login"}]
+menu = [{'name': 'Главная', 'url': '/'},
+		{'name': 'Логин', 'url': 'login'},
+		{'name': 'Форма', 'url': 'form'}]
 
 @app.route('/')
 def index():
@@ -20,6 +21,12 @@ def index():
 def login1():
 	print(url_for('login1'))
 	return render_template("login.html", menu=menu)
+
+@app.route('/form', methods=['POST', 'GET'])
+def form():
+	if request.method == 'POST':
+		print(request.form['username'])
+	return render_template("form.html", menu=menu)
 
 @app.route("/profile/<int:username>/<path>")
 def profile(username, path):

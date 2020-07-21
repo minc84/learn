@@ -10,7 +10,7 @@
   <body>
     <div>
     Microblog: {% for m in menu %}
-    {{m}}   
+    <a href="{{ m.url }}">{{ m.name }}</a>  
     
     {% endfor %}
 </div>
