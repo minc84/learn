@@ -41,7 +41,7 @@ def profile(username, path):
 @app.errorhandler(404)
 
 def pageNotFount(error):
- 	return render_template('page404.html', menu=menu)
+ 	return render_template('page404.html', menu=menu), 404
 
 if __name__ == '__main__':
       app.run(host=os.getenv('IP', '127.0.0.1'),
