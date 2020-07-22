@@ -9,3 +9,15 @@ a {
 	color: #0059b2;
 	text-decoration: none;
 }
+
+.flash{
+	padding: 10;
+}
+.flash.succes{
+	border: 1px solid #21DB56;
+	background: #AEFFC5;
+}
+.flash.error{
+	border: 1px solid #FF4343;
+	background: #FF9C9C;
+}
