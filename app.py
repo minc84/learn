@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Configuration
 import os
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, session, abort
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
@@ -17,11 +17,6 @@ def index():
 	print(url_for('index'))
 	return render_template("index.html", menu=menu)
 
-@app.route('/login')
-def login1():
-	print(url_for('login1'))
-	return render_template("login.html", menu=menu)
-
 @app.route('/form', methods=['POST', 'GET'])
 
 def form():
@@ -34,9 +29,24 @@ def form():
 
 	return render_template("form.html", menu=menu)
 
-@app.route("/profile/<int:username>/<path>")
-def profile(username, path):
-    return f"Пользователь: {username},{path}"
+@app.route("/profile/<username>")
+def profile(username):
+	if 'userLogged' not in session or session['userLogged'] != username:
+		abort(401)
+			
+		return f"Пользователь: {username}"
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+	if 'userLogged' in session:
+		return redirect(url_for('profile', username=session['userLogged']))
+	elif request.method == 'POST' and request.form['username'] == "selfa" and request.form['psw'] == "123":
+		session['userLogged'] = request.form['username']
+		return redirect(url_for('profile', username=session['userLogged']))
+	
+	return render_template("login.html", menu=menu)
+
+
 
 @app.errorhandler(404)
 
