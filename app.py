@@ -5,6 +5,7 @@ from flask import render_template, flash, redirect, url_for, request, session, a
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
+app.config.update(dict(DATABASE=os.path.join(app.root_path,'flsite.db')))
 
 
 
