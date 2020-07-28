@@ -9,6 +9,7 @@ app.config.update(dict(DATABASE=os.path.join(app.root_path,'flsite.db')))
 
 
 
+
 menu = [{'name': 'Главная', 'url': '/'},
 		{'name': 'Логин', 'url': 'login'},
 		{'name': 'Форма', 'url': 'form'}]
