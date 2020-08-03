@@ -1,3 +1,5 @@
+import sqlite3
+
 class FDataBase:
 	def __init__(self, db):
 		self.__db = db
@@ -7,11 +9,11 @@ class FDataBase:
 		sql = '''SELECT * FROM mainmenu''' 
 		try:
 			self.__cur.execute(sql)
-			res=self.__cur.fetchall()
-			if res: 
+			res = self.__cur.fetchall()
+			if res:	
+				
 				return res
-			else:
-				print ("noooooooooo")
+			
 		except:
 			print('ОШибка')
 		return []

@@ -42,12 +42,13 @@ menu = [{'name': 'Главная', 'url': '/'},
 def index():
 	db = get_db()
 	dbase = FDataBase(db)
-	
 	return render_template("index.html", menu=dbase.getMenu())
 
 @app.route('/form', methods=['POST', 'GET'])
 
 def form():
+	db = get_db()
+	dbase = FDataBase(db)
 	
 	if request.method == 'POST':
 		if len(request.form['username']) > 2:
@@ -55,7 +56,7 @@ def form():
 		else:
 			flash('Ошибка', category='error')
 
-	return render_template("form.html", menu=menu)
+	return render_template("form.html", menu=dbase.getMenu())
 
 @app.route("/profile/<username>")
 def profile(username):
