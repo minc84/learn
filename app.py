@@ -31,6 +31,12 @@ def close(error):
 		if hasattr(g, 'link_db'):
 			g.link_db.close()
 
+def dbase():
+	db = get_db()
+	dbase = FDataBase(db)
+	return dbase
+
+
 
 
 menu = [{'name': 'Главная', 'url': '/'},
@@ -39,16 +45,13 @@ menu = [{'name': 'Главная', 'url': '/'},
 
 
 @app.route('/')
-def index():
-	db = get_db()
-	dbase = FDataBase(db)
-	return render_template("index.html", menu=dbase.getMenu())
+def index():	
+	return render_template("index.html", menu=dbase().getMenu())
 
 @app.route('/form', methods=['POST', 'GET'])
 
 def form():
-	db = get_db()
-	dbase = FDataBase(db)
+	
 	
 	if request.method == 'POST':
 		if len(request.form['username']) > 2:
@@ -56,7 +59,7 @@ def form():
 		else:
 			flash('Ошибка', category='error')
 
-	return render_template("form.html", menu=dbase.getMenu())
+	return render_template("form.html", menu=dbase().getMenu())
 
 @app.route("/profile/<username>")
 def profile(username):
@@ -73,14 +76,26 @@ def login():
 		session['userLogged'] = request.form['username']
 		return redirect(url_for('profile', username=session['userLogged']))
 	
-	return render_template("login.html", menu=menu)
+	return render_template("login.html", menu=dbase().getMenu())
 
+@app.route('/add_post', methods=['POST', 'GET'])
+def add_post():
+	if len(request.form['name']) > 4 and len(request.form['post']) > 10:
+		res = dbase().addPost(request.form['name'], request.form['post'])
+		if not res:
+			flash("Ошибка добавления статьи", category='error')
+		else:
+			flash("статья добавлена успешно", category='success')
+	else:
+		flash("Ошибка добавления статьи", category='error')d	
+
+	return render_template('add_post.html', menu=dbase().getMenu(), title='Добавление статьи')
 
 
 @app.errorhandler(404)
 
 def pageNotFount(error):
- 	return render_template('page404.html', menu=menu), 404
+ 	return render_template('page404.html', menu=dbase().getMenu()), 404
 
 if __name__ == '__main__':
       app.run(host=os.getenv('IP', '127.0.0.1'),
