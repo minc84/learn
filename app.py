@@ -79,17 +79,31 @@ def login():
 	return render_template("login.html", menu=dbase().getMenu())
 
 @app.route('/add_post', methods=['POST', 'GET'])
-def add_post():
-	if len(request.form['name']) > 4 and len(request.form['post']) > 10:
-		res = dbase().addPost(request.form['name'], request.form['post'])
-		if not res:
-			flash("Ошибка добавления статьи", category='error')
+
+def addPost():
+	
+	if request.method == "POST":
+
+		if len(request.form['name']) > 4 and len(request.form['post']) > 10:
+			res = dbase().addPost(request.form['name'], request.form['post'])
+			if not res:
+				flash("статья добавлена успешно", category='success')				
+			else:
+				flash("Ошибка добавления статьи!!!", category='error')				
 		else:
-			flash("статья добавлена успешно", category='success')
-	else:
-		flash("Ошибка добавления статьи", category='error')d	
+			flash("Ошибка добавления статьи", category='error')	
 
 	return render_template('add_post.html', menu=dbase().getMenu(), title='Добавление статьи')
+
+
+@app.route('/post/<int:id_post>')
+def showPost(id_post):
+	title, post = dbase().getPost(id_post)
+	if not title:
+		abort(404)
+	return render_template('post.html', menu=dbase().getMenu(), title=title, post=post)
+
+
 
 
 @app.errorhandler(404)
