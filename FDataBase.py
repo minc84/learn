@@ -33,11 +33,21 @@ class FDataBase:
 
 	def getPost(self, id_post):
 		try:
-			self.__cur.execute(f'SELECT title, text FROM posts WHERE id = {id_post} LIMIT 1')
+			self.__cur.execute(f'SELECT title, text FROM posts WHERE id = {id_post} ')
 			res = self.__cur.fetchone()
 			if res:
 				return res
 		except sqlite3.Error as e:
 			print('ОШибка добавление статьи в БД'+str(e))
 		return (False, False)
+
+	def getPostsAnons(self):
+		try:
+			self.__cur.execute(f"SELECT id, title, text FROM posts ORDER BY time DESC")
+			res = self.__cur.fetchall()
+			if res: return res
+		except sqlite3.Error as e:
+			print('ОШибка добавление статьи в БД'+str(e))
+		return []	
+
 

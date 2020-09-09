@@ -46,7 +46,7 @@ menu = [{'name': 'Главная', 'url': '/'},
 
 @app.route('/')
 def index():	
-	return render_template("index.html", menu=dbase().getMenu())
+	return render_template("index.html", menu=dbase().getMenu(), posts=dbase().getPostsAnons())
 
 @app.route('/form', methods=['POST', 'GET'])
 
@@ -87,9 +87,10 @@ def addPost():
 		if len(request.form['name']) > 4 and len(request.form['post']) > 10:
 			res = dbase().addPost(request.form['name'], request.form['post'])
 			if not res:
-				flash("статья добавлена успешно", category='success')				
-			else:
 				flash("Ошибка добавления статьи!!!", category='error')				
+			else:
+				
+				flash("статья добавлена успешно", category='success')				
 		else:
 			flash("Ошибка добавления статьи", category='error')	
 
