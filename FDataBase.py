@@ -30,7 +30,7 @@ class FDataBase:
 				return False
 
 			tm = math.floor(time.time())
-			self.__cur.execute("INSERT INTO posts VALUES(NULL, ?,?,?, ?)", (title, text, url, tm))
+			self.__cur.execute("INSERT INTO posts VALUES(NULL, ?,?,?,?)", (title, text, url, tm))
 			res = self.__db.commit()
 		except sqlite3.Error as e:
 			print('ОШибка добавление статьи в БД'+str(e))
@@ -39,7 +39,7 @@ class FDataBase:
 
 	def getPost(self, alias):
 		try:
-			self.__cur.execute(f"SELECT title, text FROM posts WHERE url LIKE '{alias}'")
+			self.__cur.execute(f" SELECT title, text FROM posts WHERE url LIKE '{alias}'")
 			res = self.__cur.fetchone()
 			if res:
 				return res
