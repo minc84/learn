@@ -1,6 +1,8 @@
 import sqlite3
 import time
 import math
+import re
+from flask import url_for
 
 class FDataBase:
 	def __init__(self, db):
@@ -42,7 +44,13 @@ class FDataBase:
 			self.__cur.execute(f" SELECT title, text FROM posts WHERE url LIKE '{alias}'")
 			res = self.__cur.fetchone()
 			if res:
-				return res
+				bas = url_for('static', filename='image')
+
+				text = re.sub(r"(?P<tag><img\s+[^>]*src=)(?P<quote>[\"'])(?P<url>.+?)(?P=quote)>",
+     				"\\g<tag>" + bas + "/\\g<url>>",
+     				res['text'])
+				return (res['title'], text)
+
 		except sqlite3.Error as e:
 			print('ОШибка добавление статьи в БД'+str(e))
 		return (False, False)
