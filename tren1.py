@@ -1,19 +1,28 @@
 import sqlite3 as sq
 
-with sq.connect('customer.db') as con:
-	cur = con.cursor()
-	
-	cur.execute("select * from customers order by first_name ASC")
-	
-	
-
-	results = cur.fetchall()
-	for result in results:
-		print(result)
 
 
 
+def add_one(first_name,last_name,email):
+	with sq.connect('customer.db') as con:
+		cur = con.cursor()
+		cur.execute("INSERT INTO customers(first_name,last_name,email) VALUES(?,?,?)",(first_name,last_name,email))
 
+def delete_one(id):
+	with sq.connect('customer.db') as con:
+		cur = con.cursor()
+		cur.execute("DELETE FROM customers WHERE id = (?)", (id,))
+
+
+
+def show_all():
+	with sq.connect('customer.db') as con:
+		cur = con.cursor()
+		cur.execute("select * from customers")
+		
+		results = cur.fetchall()
+		for result in results:
+			print(result)
 
 
 
@@ -77,5 +86,11 @@ ur.execute("update customers set first_name='Vita' where first_name = 'Vitalina'
 cur.execute("select * from customers order by id DESC")
 	
 Команда ORDER BY задает поле для сортировки записей при выборе из базы
+
+cur.execute("select * from customers where last_name like 'Nes%' and first_name like 'El%'")
+	выбор из двух  условий
+
+	cur.execute("select * from customers limit 3")
+	вывод 3 строки
 
 """
