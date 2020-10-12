@@ -97,7 +97,7 @@ def addPost():
 	return render_template('add_post.html', menu=dbase().getMenu(), title='Добавление статьи')
 
 
-@app.route('/post/<alias>')
+@app.route('/<alias>')
 def showPost(alias):
 	title, post = dbase().getPost(alias)
 	if not title:

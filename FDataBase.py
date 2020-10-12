@@ -2,7 +2,7 @@ import sqlite3
 import time
 import math
 import re
-from flask import url_for
+from flask import url_for, g
 
 class FDataBase:
 	def __init__(self, db):
@@ -31,6 +31,14 @@ class FDataBase:
 				print("такой урл существует")
 				return False
 
+
+			bas = url_for('static', filename='image')
+
+			text = re.sub(r"(?P<tag><img\s+[^>]*src=)(?P<quote>[\"'])(?P<url>.+?)(?P=quote)>",
+     		"\\g<tag>"+ bas +"/\\g<url>>",text)
+
+
+
 			tm = math.floor(time.time())
 			self.__cur.execute("INSERT INTO posts VALUES(NULL, ?,?,?,?)", (title, text, url, tm))
 			res = self.__db.commit()
@@ -44,12 +52,7 @@ class FDataBase:
 			self.__cur.execute(f" SELECT title, text FROM posts WHERE url LIKE '{alias}'")
 			res = self.__cur.fetchone()
 			if res:
-				bas = url_for('static', filename='image')
-
-				text = re.sub(r"(?P<tag><img\s+[^>]*src=)(?P<quote>[\"'])(?P<url>.+?)(?P=quote)>",
-     				"\\g<tag>" + bas + "/\\g<url>>",
-     				res['text'])
-				return (res['title'], text)
+				return res
 
 		except sqlite3.Error as e:
 			print('ОШибка добавление статьи в БД'+str(e))
