@@ -26,6 +26,6 @@ def show_all():
 if __name__ == '__main__':
 	#add = tren1.add_one('Brishtileva','Svetlana', 'brish@yandex.ru')
 	
-	add = add_one('Л.Н. Толстой', 'Война и мир', 820, 1320.60)
-	add = add_one('М.А. Шолохов', 'Тихий дон', 1121, 675)
+	#add = add_one('Л.Н. Толстой', 'Война и мир', 820, 1320.60)
+	#add = add_one('М.А. Шолохов', 'Тихий дон', 1121, 675)
 	watch_table = show_all()

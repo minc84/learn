@@ -70,13 +70,13 @@ def profile(username):
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-	if 'userLogged' in session:
-		return redirect(url_for('profile', username=session['userLogged']))
-	elif request.method == 'POST' and request.form['username'] == "selfa" and request.form['psw'] == "123":
-		session['userLogged'] = request.form['username']
-		return redirect(url_for('profile', username=session['userLogged']))
+	# if 'userLogged' in session:
+	# 	return redirect(url_for('profile', username=session['userLogged']))
+	# elif request.method == 'POST' and request.form['username'] == "selfa" and request.form['psw'] == "123":
+	# 	session['userLogged'] = request.form['username']
+	# 	return redirect(url_for('profile', username=session['userLogged']))
 	
-	return render_template("login.html", menu=dbase().getMenu())
+	return render_template("login.html", menu=dbase().getMenu(), title='Авторизация')
 
 @app.route('/add_post', methods=['POST', 'GET'])
 
