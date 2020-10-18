@@ -4,6 +4,7 @@ import os
 from flask import render_template, flash, redirect, url_for, request, session, abort, g
 import sqlite3
 from FDataBase import FDataBase
+from werkzeug.security import generate_password_hash, check_password_hash 
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
@@ -68,7 +69,7 @@ def profile(username):
 			
 		return f"Пользователь: {username}"
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login')
 def login():
 	# if 'userLogged' in session:
 	# 	return redirect(url_for('profile', username=session['userLogged']))
@@ -77,6 +78,30 @@ def login():
 	# 	return redirect(url_for('profile', username=session['userLogged']))
 	
 	return render_template("login.html", menu=dbase().getMenu(), title='Авторизация')
+
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+	if request.method == "POST":
+		session.pop('_flashes', None)
+		if len(request.form['name']) > 4 and len(request.form['email']) > 4 \
+        	and len(request.form['psw']) > 4 and request.form['psw'] == request.form['psw2']:
+			hash = generate_password_hash(request.form['psw'])
+			res = dbase().addUser(request.form['name'], request.form['email'], hash)
+			if res:
+				flash("Вы успешно зарегистрированы", "success")
+				return redirect(url_for('login'))
+			else:
+				flash("Ошибка при добавлении в БД", "error")
+		else:
+			flash("Неверно заполнены поля", "error")
+ 
+    	
+	return render_template("register.html", menu=dbase().getMenu(), title='Регистрация')
+
+
+
+
+
 
 @app.route('/add_post', methods=['POST', 'GET'])
 
