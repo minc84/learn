@@ -82,7 +82,7 @@ def login():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
 	if request.method == "POST":
-		session.pop('_flashes', None)
+		
 		if len(request.form['name']) > 4 and len(request.form['email']) > 4 \
         	and len(request.form['psw']) > 4 and request.form['psw'] == request.form['psw2']:
 			hash = generate_password_hash(request.form['psw'])
