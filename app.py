@@ -5,10 +5,16 @@ from flask import render_template, flash, redirect, url_for, request, session, a
 import sqlite3
 from FDataBase import FDataBase
 from werkzeug.security import generate_password_hash, check_password_hash 
+from flask_login import LoginManager
+
+
+
 
 app = Flask(__name__)
 app.config.from_object(Configuration)
 app.config.update(dict(DATABASE=os.path.join(app.root_path,'flsite.db')))
+login_manager = LoginManager(app)
+
 
 def connect_db():
 	conn=sqlite3.connect(app.config['DATABASE'])
