@@ -5,7 +5,8 @@ from flask import render_template, flash, redirect, url_for, request, session, a
 import sqlite3
 from FDataBase import FDataBase
 from werkzeug.security import generate_password_hash, check_password_hash 
-from flask_login import LoginManager
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+from UserLogin import UserLogin
 
 
 
@@ -15,6 +16,15 @@ app.config.from_object(Configuration)
 app.config.update(dict(DATABASE=os.path.join(app.root_path,'flsite.db')))
 login_manager = LoginManager(app)
 
+login_manager.login_view = 'login'
+login_manager.login_message = 'АВТОРИЗУЙТЕСЬ!!!!'
+login_manager.login_message_category = "success"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+	print("load_user")
+	return UserLogin().fromDB(user_id, dbase())
 
 def connect_db():
 	conn=sqlite3.connect(app.config['DATABASE'])
@@ -75,15 +85,15 @@ def profile(username):
 			
 		return f"Пользователь: {username}"
 
-@app.route('/login')
-def login():
+#@app.route('/login')
+#def login():
 	# if 'userLogged' in session:
 	# 	return redirect(url_for('profile', username=session['userLogged']))
 	# elif request.method == 'POST' and request.form['username'] == "selfa" and request.form['psw'] == "123":
 	# 	session['userLogged'] = request.form['username']
 	# 	return redirect(url_for('profile', username=session['userLogged']))
 	
-	return render_template("login.html", menu=dbase().getMenu(), title='Авторизация')
+#	return render_template("login.html", menu=dbase().getMenu(), title='Авторизация')
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -104,13 +114,47 @@ def register():
     	
 	return render_template("register.html", menu=dbase().getMenu(), title='Регистрация')
 
+@app.route("/login", methods=["POST", "GET"])
+def login():
+	if current_user.is_authenticated:
+		return redirect(url_for('profil'))
+
+
+	if request.method == "POST":
+		user = dbase().getUserByEmail(request.form['email'])
+
+		if user and check_password_hash(user['psw'], request.form['psw']):
+			userlogin = UserLogin().create(user)
+			rm = True if request.form.get('remainme') else False
+			login_user(userlogin, remember=rm)
+			return redirect(url_for('profil'))
+ 
+		flash("Неверная пара логин/пароль", "error")
+ 
+	return render_template("login.html", menu=dbase().getMenu(), title="Авторизация")
+
+
+@app.route('/logout')
+@login_required
+def logout():
+	logout_user()
+	flash("Вы вышли из аккаунта", "success")
+	return redirect(url_for('login'))
+
+
+@app.route('/profil')
+@login_required
+def profil():
+	return f"""<a href="{url_for('logout')}">Выйти из профиля</a>
+				user info: {current_user.get_id()}"""
+
 
 
 
 
 
 @app.route('/add_post', methods=['POST', 'GET'])
-
+@login_required
 def addPost():
 	
 	if request.method == "POST":
@@ -137,7 +181,6 @@ def showPost(alias):
 
 
 
-
 @app.errorhandler(404)
 
 def pageNotFount(error):
@@ -146,4 +189,5 @@ def pageNotFount(error):
 if __name__ == '__main__':
       app.run(host=os.getenv('IP', '127.0.0.1'),
             port=int(os.getenv('PORT', 4000)))
-      
+
+
