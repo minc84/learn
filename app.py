@@ -145,8 +145,7 @@ def logout():
 @app.route('/profil')
 @login_required
 def profil():
-	return f"""<a href="{url_for('logout')}">Выйти из профиля</a>
-				user info: {current_user.get_id()}"""
+	return render_template("profile.html", menu=dbase().getMenu(), title="Профиль")
 
 
 
@@ -170,6 +169,19 @@ def addPost():
 			flash("Ошибка добавления статьи", category='error')	
 
 	return render_template('add_post.html', menu=dbase().getMenu(), title='Добавление статьи')
+
+
+
+@app.route('/userava')
+@login_required
+def userava():
+	img = current_user.getAvatar(app)
+	if not img:
+		return ""
+ 
+	h = make_response(img)
+	h.headers['Content-Type'] = 'image/png'
+	return h
 
 
 @app.route('/<alias>')
