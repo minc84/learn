@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Configuration
 import os
-from flask import render_template, flash, redirect, url_for, request, session, abort, g
+from flask import render_template, flash, redirect, url_for, request, session, abort, g, make_response
 import sqlite3
 from FDataBase import FDataBase
 from werkzeug.security import generate_password_hash, check_password_hash 
@@ -19,7 +19,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'АВТОРИЗУЙТЕСЬ!!!!'
 login_manager.login_message_category = "success"
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -191,6 +190,26 @@ def showPost(alias):
 		abort(404)
 	return render_template('post.html', menu=dbase().getMenu(), title=title, post=post)
 
+
+@app.route('/upload', methods=["POST", "GET"])
+@login_required
+def upload():
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and current_user.verifyExt(file.filename):
+			try:
+				img = file.read()
+				res = dbase().updateUserAvatar(img, current_user.get_id())
+				if not res:
+					flash("Ошибка обновления аватара", "error")
+
+				flash("Аватар обновлен", "success")
+			except FileNotFoundError as e:
+				flash("Ошибка чтения файла", "error")
+		else:
+			flash("Необходим PNG файл", "error")
+ 
+	return redirect(url_for('profil'))
 
 
 @app.errorhandler(404)
