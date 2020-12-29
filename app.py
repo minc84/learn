@@ -24,7 +24,7 @@ login_manager.login_message_category = "success"
 @login_manager.user_loader
 def load_user(user_id):
 	print("load_user")
-	return UserLogin().fromDB(user_id, dbase())
+	return UserLogin().fromDB(user_id, dbase)
 
 def connect_db():
 	conn=sqlite3.connect(app.config['DATABASE'])
@@ -43,15 +43,21 @@ def get_db():
 		g.link_db = connect_db()
 	return g.link_db
 
+dbase = None
+@app.before_request
+def before_request():
+    """Установление соединения с БД перед выполнением запроса"""
+    global dbase
+    db = get_db()
+    dbase = FDataBase(db)
+
+
+
 @app.teardown_appcontext
 def close(error):
 		if hasattr(g, 'link_db'):
 			g.link_db.close()
 
-def dbase():
-	db = get_db()
-	dbase = FDataBase(db)
-	return dbase
 
 
 
@@ -63,7 +69,7 @@ menu = [{'name': 'Главная', 'url': '/'},
 
 @app.route('/')
 def index():	
-	return render_template("index.html", menu=dbase().getMenu(), posts=dbase().getPostsAnons())
+	return render_template("index.html", menu=dbase.getMenu(), posts=dbase.getPostsAnons())
 
 @app.route('/form', methods=['POST', 'GET'])
 
@@ -76,7 +82,7 @@ def form():
 		else:
 			flash('Ошибка', category='error')
 
-	return render_template("form.html", menu=dbase().getMenu())
+	return render_template("form.html", menu=dbase.getMenu())
 
 @app.route("/profile/<username>")
 def profile(username):
@@ -100,14 +106,14 @@ def register():
 	form = RegisterForm()
 	if form.validate_on_submit():
 			hash = generate_password_hash(request.form['psw'])
-			res = dbase().addUser(form.name.data, form.email.data, hash)
+			res = dbase.addUser(form.name.data, form.email.data, hash)
 			if res:
 				flash("Вы успешно зарегистрированы", "success")
 				return redirect(url_for('login'))
 			else:
 				flash("Ошибка при добавлении в БД", "error")
  
-	return render_template("register.html", menu=dbase().getMenu(), title="Регистрация", form=form)
+	return render_template("register.html", menu=dbase.getMenu(), title="Регистрация", form=form)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -116,7 +122,7 @@ def login():
 
 	form = LoginForm()
 	if form.validate_on_submit():
-		user = dbase().getUserByEmail(form.email.data)
+		user = dbase.getUserByEmail(form.email.data)
 		if user and check_password_hash(user['psw'], form.psw.data):
 			userlogin = UserLogin().create(user)
 			rm = form.remember.data
@@ -125,7 +131,7 @@ def login():
  
 		flash("Неверная пара логин/пароль", "error")
  
-	return render_template("login.html", menu=dbase().getMenu(), title="Авторизация", form=form)
+	return render_template("login.html", menu=dbase.getMenu(), title="Авторизация", form=form)
 	
 
 	# if request.method == "POST":
@@ -153,7 +159,7 @@ def logout():
 @app.route('/profil')
 @login_required
 def profil():
-	return render_template("profile.html", menu=dbase().getMenu(), title="Профиль")
+	return render_template("profile.html", menu=dbase.getMenu(), title="Профиль")
 
 
 
@@ -176,7 +182,7 @@ def addPost():
 		else:
 			flash("Ошибка добавления статьи", category='error')	
 
-	return render_template('add_post.html', menu=dbase().getMenu(), title='Добавление статьи')
+	return render_template('add_post.html', menu=dbase.getMenu(), title='Добавление статьи')
 
 
 
@@ -194,10 +200,10 @@ def userava():
 
 @app.route('/<alias>')
 def showPost(alias):
-	title, post = dbase().getPost(alias)
+	title, post = dbase.getPost(alias)
 	if not title:
 		abort(404)
-	return render_template('post.html', menu=dbase().getMenu(), title=title, post=post)
+	return render_template('post.html', menu=dbase.getMenu(), title=title, post=post)
 
 
 @app.route('/upload', methods=["POST", "GET"])
@@ -208,7 +214,7 @@ def upload():
 		if file and current_user.verifyExt(file.filename):
 			try:
 				img = file.read()
-				res = dbase().updateUserAvatar(img, current_user.get_id())
+				res = dbase.updateUserAvatar(img, current_user.get_id())
 				if not res:
 					flash("Ошибка обновления аватара", "error")
 
@@ -224,7 +230,7 @@ def upload():
 @app.errorhandler(404)
 
 def pageNotFount(error):
- 	return render_template('page404.html', menu=dbase().getMenu()), 404
+ 	return render_template('page404.html', menu=dbase.getMenu()), 404
 
 if __name__ == '__main__':
       app.run(host=os.getenv('IP', '127.0.0.1'),

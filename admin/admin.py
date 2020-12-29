@@ -5,8 +5,8 @@ admin = Blueprint('admin', __name__, template_folder='templates', static_folder=
 
 
 db = None
-@admin.before_request
 
+@admin.before_request
 def before_request():
     """Установление соединения с БД перед выполнением запроса"""
     global db
@@ -22,6 +22,7 @@ def teardown_request(request):
 
 menu = [{'url': '.index', 'title': 'Панель'},
 		{'url': '.listpubs', 'title': 'Список статей'},
+		{'url': '.listusers', 'title': 'Список пользователей'},
         {'url': '.logout', 'title': 'Выйти'}]
 
 
@@ -53,7 +54,7 @@ def logout():
  
 	logout_admin()
  
-	return redirect(url_for('.login'))
+	return redirect(url_for('index'))
 
 @admin.route('/')
 def index():
@@ -78,3 +79,20 @@ def listpubs():
 			print("Ошибка получения статей из БД " + str(e))
  
 	return render_template('admin/listpubs.html', title='Список статей', menu=menu, list=list)
+
+
+@admin.route('/list-users')
+def listusers():
+	if not isLogged():
+		return redirect(url_for('.login'))
+ 
+	list = []
+	if db:
+		try:
+			cur = db.cursor()
+			cur.execute(f"SELECT name, email, psw FROM users ORDER BY time DESC")
+			list = cur.fetchall()
+		except sqlite3.Error as e:
+			print("Ошибка получения статей из БД " + str(e))
+ 
+	return render_template('admin/listusers.html', title='Список пользователей', menu=menu, list=list)
