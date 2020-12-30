@@ -42,14 +42,16 @@ def reg():
 			db.session.flush()
  
 			p = Profiles(name=request.form['name'], old=request.form['old'],
-                         city=request.form['city'], user_id = u.id)
+				city=request.form['city'], user_id = u.id)
 			db.session.add(p)
 			db.session.commit()
 		except:
 			db.session.rollback()
 			print("Ошибка добавления в БД")
- 
 		return render_template("ind.html", title="Главная")
+
+ 
+	return render_template("reg.html", title="Главная")
 
 if __name__ == "__main__":
 	app.run(debug=True)
