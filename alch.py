@@ -12,7 +12,9 @@ class Users(db.Model):
 	email = db.Column(db.String(50), unique=True)
 	psw = db.Column(db.String(500), nullable=True)
 	date = db.Column(db.DateTime, default=datetime.utcnow)
-
+	
+	pr = db.relationship('Profiles', backref='users', uselist=False)
+	
 	def __repr__(self):
 		return f"<users {self.id}>"
 
@@ -29,7 +31,13 @@ class Profiles(db.Model):
 
 @app.route("/", methods=("POST", "GET"))
 def ind():
-    return render_template("ind.html", title="Главная")
+	info = []
+	try:
+		info = Users.query.filter(Users.id > 1).all()
+	except:
+		print("Ошибка чтения из БД")
+ 
+	return render_template("ind.html", title="Главная", list=info)
 
 @app.route("/reg", methods=("POST", "GET"))
 def reg():
