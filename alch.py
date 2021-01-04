@@ -31,13 +31,12 @@ class Profiles(db.Model):
 
 @app.route("/", methods=("POST", "GET"))
 def ind():
-	info = []
 	try:
-		info = Users.query.filter(Users.id > 1).all()
+		info = Users.query.all()
 	except:
 		print("Ошибка чтения из БД")
  
-	return render_template("ind.html", title="Главная", list=info)
+	return render_template("ind.html", title="Главная", info=info)
 
 @app.route("/reg", methods=("POST", "GET"))
 def reg():
@@ -60,6 +59,31 @@ def reg():
 
  
 	return render_template("reg.html", title="Главная")
+
+@app.route('/<int:id>')
+def pos(id):
+	pos = Users.query.get(id)
+	pos1 = Profiles.query.get(id)
+	print(pos)
+	return render_template("pos.html", title="Главная", pos=pos, pos1=pos1)
+
+@app.route('/<int:id>/delete')
+def deleteUser(id):
+	pos = Users.query.get_or_404(id)
+	pos1 = Profiles.query.get_or_404(id)
+
+	try:
+		db.session.delete(pos)
+		db.session.delete(pos1)
+		db.session.commit()
+		redirect('/')
+	
+	except:
+		db.session.rollback()
+		print("Ошибка добавления в БД")
+
+
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

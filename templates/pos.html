@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <ul>
+
+ <ul>
+<li>id: {{pos.id}}, email: {{pos.email}}</li>
+          <li>Имя: {{pos1.name}}</li>
+         <li>Возраст: {{pos1.old}}</li>
+         <li>Город: {{pos1.city}}</li>
+       		<li><a href="/{{pos.id}}/delete">Удалить</a></li>
+       	<li><a href="/{{pos.id}}/update">Редактировать</a></li>
+         </ul>
+</li>
+<br/>
+
+</ul>
+{% endblock content %}

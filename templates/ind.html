@@ -2,14 +2,16 @@
 
 {% block content %}
     <ul>
-{% for u in list %}
-<li>id: {{u.id}}, email: {{u.email}}</p>
-         <ul>
-         <li>Имя: {{u.pr.name}}</li>
+{% for u in info %}
+ <ul>
+<li>id: {{u.id}}, email: {{u.email}}</li>
+          <li>Имя: {{u.pr.name}}</li>
          <li>Возраст: {{u.pr.old}}</li>
          <li>Город: {{u.pr.city}}</li>
+         <a href="/{{u.id}}">Подробнее</a>       
          </ul>
 </li>
+<br/>
 {% endfor %}
 </ul>
 {% endblock content %}
