@@ -42,5 +42,5 @@ class Account:
 
 
 a = Account('Nikolay',0)
-
+b = Account('Vita',0)
 

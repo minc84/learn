@@ -69,20 +69,43 @@ def pos(id):
 
 @app.route('/<int:id>/delete')
 def deleteUser(id):
-	pos = Users.query.get_or_404(id)
-	pos1 = Profiles.query.get_or_404(id)
-
 	try:
+		pos = Users.query.get_or_404(id)
 		db.session.delete(pos)
+		db.session.flush()
+
+		pos1 = Profiles.query.get_or_404(id)
+	
 		db.session.delete(pos1)
 		db.session.commit()
-		redirect('/')
-	
+		
 	except:
 		db.session.rollback()
-		print("Ошибка добавления в БД")
+		print("Ошибка удаление БД")
 
+	return render_template("ind.html", title="Ярослава")
 
+@app.route('/<int:id>/update', methods=("POST", "GET"))
+def updateUser(id):
+	if request.method == "POST":
+        # здесь должна быть проверка корректности введенных данных
+		try:
+			pos = Users.query.get(id)
+	
+			pos.email=request.form['email']
+			db.session.flush()
+
+			pos1 = Profiles.query.get(id)
+ 
+			pos1.name=request.form['name']
+			pos1.old=request.form['old']
+			pos1.city=request.form['city']
+			
+			db.session.commit()
+		except:
+			db.session.rollback()
+			print("Ошибка добавления в БД")
+		return render_template("update.html", title="Главная", pos=pos, pos1=pos1)
 
 
 if __name__ == "__main__":
