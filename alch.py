@@ -90,12 +90,12 @@ def updateUser(id):
 	if request.method == "POST":
         # здесь должна быть проверка корректности введенных данных
 		try:
-			pos = Users.query.get(id)
+			pos = Users.query.get_or_404(id)
 	
 			pos.email=request.form['email']
 			db.session.flush()
 
-			pos1 = Profiles.query.get(id)
+			pos1 = Profiles.query.get_or_404(id)
  
 			pos1.name=request.form['name']
 			pos1.old=request.form['old']
@@ -105,7 +105,8 @@ def updateUser(id):
 		except:
 			db.session.rollback()
 			print("Ошибка добавления в БД")
-		return render_template("update.html", title="Главная", pos=pos, pos1=pos1)
+
+	return render_template("update.html", title="Главная", pos=pos, pos1=pos1)
 
 
 if __name__ == "__main__":
