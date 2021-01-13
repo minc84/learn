@@ -106,7 +106,7 @@ def updateUser(id):
 			db.session.rollback()
 			print("Ошибка добавления в БД")
 
-	return render_template("update.html", title="Главная", pos=pos, pos1=pos1)
+		return render_template("update.html", title="Главная", pos=pos, pos1=pos1)
 
 
 if __name__ == "__main__":
